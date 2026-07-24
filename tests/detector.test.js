@@ -112,3 +112,37 @@ describe('findSkipButtons — seletores conhecidos (botoes so com icone)', () =>
     expect(findSkipButtons(document)).toHaveLength(1);
   });
 });
+
+describe('findSkipButtons — controles de seek NAO sao pular (bug Apple TV+)', () => {
+  // (POR QUE) Caso real: no Apple TV+ os controles de +-10s tem aria-label
+  //   "Skip Back"/"Skip Forward"/"Skip Ahead". O keyword generico "skip" casava
+  //   a palavra "skip" dentro deles -> clicar retrocedia o video em loop. A
+  //   denylist tem prioridade e deve barrar todos esses.
+  test('nao retorna "Skip Back" (retroceder 10s)', () => {
+    render('<button aria-label="Skip Back 10 Seconds"></button>');
+    expect(findSkipButtons(document)).toHaveLength(0);
+  });
+
+  test('nao retorna "Skip Forward" (avancar 10s)', () => {
+    render('<button aria-label="Skip Forward 10 Seconds"></button>');
+    expect(findSkipButtons(document)).toHaveLength(0);
+  });
+
+  test('nao retorna "Skip Ahead"', () => {
+    render('<button aria-label="Skip Ahead"></button>');
+    expect(findSkipButtons(document)).toHaveLength(0);
+  });
+
+  test('nao retorna controles de seek em ES/IT ("Saltar atrás", "Salta avanti")', () => {
+    render(
+      '<button aria-label="Saltar atrás"></button>' +
+        '<button aria-label="Salta avanti"></button>'
+    );
+    expect(findSkipButtons(document)).toHaveLength(0);
+  });
+
+  test('ainda reconhece o botao de pular real ("Skip Intro")', () => {
+    render('<button aria-label="Skip Intro"></button>');
+    expect(findSkipButtons(document)).toHaveLength(1);
+  });
+});

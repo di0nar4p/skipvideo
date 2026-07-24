@@ -28,6 +28,13 @@
   // (COMO) Globals expostos pelos scripts carregados antes deste (ordem do manifest).
   const api = globalThis.SkipVideoApi || globalThis.browser || globalThis.chrome;
   const { findSkipButtons } = globalThis.SkipVideoDetector;
+  const { createClickGuard } = globalThis.SkipVideoClickGuard;
+
+  // (O QUE) Guard de auto-cura: um pular real some apos o clique; um
+  //   falso-positivo (ex.: controle de +-10s do Apple TV+) persiste. O guard
+  //   bloqueia quem persiste depois de poucos cliques, matando o loop. Vive por
+  //   toda a sessao da pagina (um botao novo mais tarde e outro elemento).
+  const clickGuard = createClickGuard();
 
   // ---- Constantes de ajuste (documentadas para facilitar tuning) -----------
   // (POR QUE) Teto de iteracoes por rajada: impede um laco infinito caso um
@@ -65,30 +72,44 @@
   }
 
   /**
-   * (O QUE) Executa uma rajada de scan+clique ate a tela nao ter mais botoes.
-   * (POR QUE) Cumpre o requisito central: "so pare quando nao achar mais o botao".
-   * (COMO) Loop com teto de seguranca. A cada volta, acha e clica todos os
-   *   botoes visiveis; se nada foi clicado, encerra a rajada.
+   * (O QUE) Executa uma rajada de scan+clique ate a tela nao ter mais botoes NOVOS.
+   * (POR QUE) Cumpre o requisito central ("so pare quando nao achar mais o botao")
+   *   SEM cair no loop do Apple TV+: antes, um botao que persistia apos o clique
+   *   (controle de seek) era reclicado ate 10x por rajada e a cada 1s -> video
+   *   retrocedendo sem parar.
+   * (COMO) Duas defesas:
+   *   - Set `clickedThisBurst`: nunca reclica o MESMO elemento na mesma rajada;
+   *     a re-varredura serve so para pegar botoes NOVOS em cascata. Se um scan
+   *     nao traz nada novo, a rajada encerra.
+   *   - `clickGuard`: se um elemento persiste entre rajadas e ja foi clicado
+   *     alem do limite, e bloqueado de vez (auto-cura, independe do rotulo).
    */
   function runBurst() {
     if (!enabled) return;
-    let clickedThisBurst = 0;
+    const clickedThisBurst = new Set();
+    let clickCount = 0;
 
     for (let i = 0; i < MAX_BURST_ITERATIONS; i++) {
-      const buttons = findSkipButtons(document);
-      if (buttons.length === 0) break; // nada mais para pular -> para.
+      // So consideramos botoes ainda permitidos e nao clicados nesta rajada.
+      const buttons = findSkipButtons(document).filter(
+        (el) => clickGuard.allow(el) && !clickedThisBurst.has(el)
+      );
+      if (buttons.length === 0) break; // nada NOVO para pular -> para.
 
       for (const button of buttons) {
         try {
           button.click();
-          clickedThisBurst++;
         } catch (_) {
           // Elemento pode ter saido do DOM entre achar e clicar: ignoramos.
+          continue;
         }
+        clickedThisBurst.add(button);
+        clickGuard.record(button); // conta o clique (pode bloquear se persistir).
+        clickCount++;
       }
     }
 
-    if (clickedThisBurst > 0) bumpClickCount(clickedThisBurst);
+    if (clickCount > 0) bumpClickCount(clickCount);
   }
 
   /** (COMO) Agenda um runBurst com debounce para nao disparar por cada mutation. */

@@ -40,7 +40,7 @@ api.js → platforms.js → matcher.js → detector.js → skip-scanner.js
 
 Concentrar as **decisões** em funções puras é o que torna a extensão testável
 sem navegador e segura: toda a proteção contra clicar no botão errado vive no
-`matcher`/`detector` e é exercitada por 25 testes automatizados.
+`matcher`/`detector`/`click-guard` e é exercitada por 41 testes automatizados.
 
 ### 3.3 Duas camadas de detecção (texto + seletores)
 A detecção por **texto multi-idioma** é a base, mas players como HBO Max e
@@ -61,7 +61,17 @@ de seletores ainda respeita visibilidade e denylist.
 - **`setInterval` de 1s** é a rede de segurança para players que mudam via
   `<video>`/Shadow DOM sem disparar mutations observáveis.
 - Após clicar, uma **rajada** (`runBurst`) re-escaneia até a tela ficar sem
-  botões, com **teto de iterações** para nunca travar a aba.
+  botões **novos**, com **teto de iterações** para nunca travar a aba.
+
+**Proteção anti-loop (bug Apple TV+).** Os controles de ±10s do player têm
+`aria-label` "Skip Back"/"Skip Forward", cuja palavra "skip" colidia com o
+keyword genérico → clicar retrocedia o vídeo, e como o controle **persiste** ele
+era reclicado sem parar. Correção em três frentes: (1) esses rótulos de seek
+entraram na `DENYLIST` (nunca clicados); (2) `runBurst` usa um `Set` por rajada
+para não reclicar o mesmo elemento; (3) **`click-guard.js`** (auto-cura): um
+pular real some após o clique, um falso-positivo persiste — após poucos cliques
+no mesmo elemento (via `WeakMap`/`WeakSet`), ele é bloqueado de vez. As frentes 2
+e 3 independem do rótulo, então blindam contra falso-positivos futuros.
 
 ### 3.5 Matching resistente a falso-positivo
 - Texto e keywords são **normalizados** (minúsculo, sem acento, espaços colapsados).

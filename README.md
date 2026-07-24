@@ -17,7 +17,7 @@ streaming — e **continua verificando** a tela até não achar mais nenhum.
 ## Plataformas suportadas
 
 Netflix · YouTube · Prime Video · Disney+ · Max/HBO Max · Globoplay ·
-Crunchyroll · Paramount+ · Apple TV+ · Star+
+Crunchyroll · Paramount+ · Star+
 *(a lista fica em `manifest.json` e `src/config/platforms.js`)*
 
 ## Instalação local
@@ -54,4 +54,4 @@ Detalhes de arquitetura e segurança em
 
 ## Licença
 
-MIT.
+MIT © Glauco Santos — veja o arquivo [LICENSE](LICENSE).

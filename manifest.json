@@ -17,7 +17,6 @@
     "*://globoplay.globo.com/*",
     "*://*.crunchyroll.com/*",
     "*://*.paramountplus.com/*",
-    "*://tv.apple.com/*",
     "*://*.starplus.com/*"
   ],
 
@@ -33,7 +32,6 @@
         "*://globoplay.globo.com/*",
         "*://*.crunchyroll.com/*",
         "*://*.paramountplus.com/*",
-        "*://tv.apple.com/*",
         "*://*.starplus.com/*"
       ],
       "js": [
@@ -41,6 +39,7 @@
         "src/config/platforms.js",
         "src/shared/matcher.js",
         "src/content/detector.js",
+        "src/content/click-guard.js",
         "src/content/skip-scanner.js"
       ],
       "run_at": "document_idle",

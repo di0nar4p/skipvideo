@@ -31,7 +31,6 @@ const STREAMING_MATCHES = [
   '*://globoplay.globo.com/*',
   '*://*.crunchyroll.com/*',
   '*://*.paramountplus.com/*',
-  '*://tv.apple.com/*',
   '*://*.starplus.com/*',
 ];
 
@@ -80,12 +79,28 @@ const SKIP_SELECTORS = [
 //   como pular uma etapa de pagamento ou o link de acessibilidade "pular para o
 //   conteudo", que existe em muitas paginas.
 const DENYLIST = [
+  // Etapas/links perigosos que contem "skip"/"pular"/"saltar".
   'skip payment',
   'pular pagamento',
   'skip to content',
   'skip to main content',
   'saltar al contenido',
   'skip navigation',
+  // (POR QUE) Controles de avancar/retroceder 10s dos players (bug real no
+  //   Apple TV+): seus rotulos contem a palavra "skip"/"salta"/"saltar", entao
+  //   colidiam com os keywords genericos e faziam o video retroceder em loop.
+  //   Como a denylist casa por limite de palavra, "skip back 10 seconds" e
+  //   barrado por conter a frase "skip back".
+  'skip back',
+  'skip backward',
+  'skip forward',
+  'skip ahead',
+  'skip back 10 seconds',
+  'skip forward 10 seconds',
+  'saltar adelante',
+  'saltar atras',
+  'salta avanti',
+  'salta indietro',
 ];
 
 if (typeof module !== 'undefined' && module.exports) {
