@@ -1,0 +1,146 @@
+/**
+ * ============================================================================
+ * src/popup/popup.css — Estilos do popup
+ * ----------------------------------------------------------------------------
+ * @author Glauco Santos
+ * ----------------------------------------------------------------------------
+ * (O QUE) Aparencia do painel. (POR QUE) Um visual limpo e legivel comunica
+ *   estado (ligado/desligado) e contagem num relance. (COMO) CSS puro, com
+ *   suporte a tema claro/escuro via prefers-color-scheme.
+ * ============================================================================
+ */
+:root {
+  --bg: #ffffff;
+  --fg: #0f172a;
+  --muted: #64748b;
+  --accent: #2563eb;
+  --border: #e2e8f0;
+  --surface: #f8fafc;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --fg: #f1f5f9;
+    --muted: #94a3b8;
+    --accent: #3b82f6;
+    --border: #1e293b;
+    --surface: #1e293b;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  width: 260px;
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.header {
+  padding: 16px 16px 8px;
+}
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+.subtitle {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.content {
+  padding: 8px 16px 16px;
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.switch-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* (COMO) Switch feito com checkbox escondido + slider animado. */
+.switch {
+  position: relative;
+  width: 42px;
+  height: 24px;
+}
+.switch input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+.slider {
+  position: absolute;
+  inset: 0;
+  background: var(--muted);
+  border-radius: 999px;
+  transition: background 0.15s ease;
+}
+.slider::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.15s ease;
+}
+.switch input:checked + .slider {
+  background: var(--accent);
+}
+.switch input:checked + .slider::before {
+  transform: translateX(18px);
+}
+
+.counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 16px 0 12px;
+}
+.counter-value {
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent);
+}
+.counter-caption {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.reset-btn {
+  width: 100%;
+  padding: 8px;
+  font-size: 13px;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.reset-btn:hover {
+  color: var(--fg);
+  border-color: var(--muted);
+}

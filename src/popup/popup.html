@@ -1,0 +1,52 @@
+<!doctype html>
+<!--
+  ============================================================================
+  src/popup/popup.html — Interface do popup (liga/desliga + contador)
+  ----------------------------------------------------------------------------
+  @author Glauco Santos
+  ----------------------------------------------------------------------------
+  (O QUE) Painelzinho que abre ao clicar no icone da extensao.
+  (POR QUE) Da ao usuario controle (ligar/desligar) e feedback (quantos cliques
+    ja foram economizados) sem sair da pagina.
+  (COMO) HTML estatico + CSS proprio + popup.js. Sem frameworks e sem scripts
+    externos: exige-se apenas o arquivo local, o que satisfaz a CSP padrao de
+    extensoes MV3 (nada de codigo remoto).
+  ============================================================================
+-->
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="popup.css" />
+    <title>SkipVideo</title>
+  </head>
+  <body>
+    <header class="header">
+      <h1 class="title">SkipVideo</h1>
+      <p class="subtitle">Pular abertura, resumo e anuncio</p>
+    </header>
+
+    <main class="content">
+      <!-- (O QUE) Interruptor principal. (COMO) checkbox estilizado como switch. -->
+      <label class="switch-row">
+        <span class="switch-label">Ativado</span>
+        <span class="switch">
+          <input type="checkbox" id="toggle-enabled" />
+          <span class="slider" aria-hidden="true"></span>
+        </span>
+      </label>
+
+      <!-- (O QUE) Contador de cliques economizados. -->
+      <section class="counter" aria-live="polite">
+        <span class="counter-value" id="click-count">0</span>
+        <span class="counter-caption">botoes pulados automaticamente</span>
+      </section>
+
+      <button type="button" class="reset-btn" id="reset-count">
+        Zerar contador
+      </button>
+    </main>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

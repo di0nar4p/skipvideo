@@ -1,0 +1,17 @@
+# Dependencias (reinstalaveis via npm install)
+node_modules/
+
+# Logs e artefatos
+npm-debug.log*
+*.log
+
+# Empacotamento da extensao para distribuicao
+*.zip
+*.xpi
+web-ext-artifacts/
+
+# Sistema operacional / editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

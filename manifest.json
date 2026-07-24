@@ -1,0 +1,78 @@
+{
+  "manifest_version": 3,
+  "name": "SkipVideo — Pular automatico",
+  "version": "1.0.0",
+  "description": "Detecta e clica automaticamente em botoes de pular abertura, resumo e anuncio em plataformas de streaming.",
+  "author": "Glauco Santos",
+
+  "permissions": ["storage"],
+
+  "host_permissions": [
+    "*://*.netflix.com/*",
+    "*://*.youtube.com/*",
+    "*://*.primevideo.com/*",
+    "*://*.disneyplus.com/*",
+    "*://*.max.com/*",
+    "*://*.hbomax.com/*",
+    "*://globoplay.globo.com/*",
+    "*://*.crunchyroll.com/*",
+    "*://*.paramountplus.com/*",
+    "*://tv.apple.com/*",
+    "*://*.starplus.com/*"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.netflix.com/*",
+        "*://*.youtube.com/*",
+        "*://*.primevideo.com/*",
+        "*://*.disneyplus.com/*",
+        "*://*.max.com/*",
+        "*://*.hbomax.com/*",
+        "*://globoplay.globo.com/*",
+        "*://*.crunchyroll.com/*",
+        "*://*.paramountplus.com/*",
+        "*://tv.apple.com/*",
+        "*://*.starplus.com/*"
+      ],
+      "js": [
+        "src/shared/api.js",
+        "src/config/platforms.js",
+        "src/shared/matcher.js",
+        "src/content/detector.js",
+        "src/content/skip-scanner.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+
+  "background": {
+    "service_worker": "src/background/service-worker.js",
+    "scripts": ["src/background/service-worker.js"]
+  },
+
+  "action": {
+    "default_title": "SkipVideo",
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "skipvideo@glaucosantos.dev",
+      "strict_min_version": "109.0"
+    }
+  }
+}
