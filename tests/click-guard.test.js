@@ -53,4 +53,27 @@ describe('createClickGuard', () => {
     guard.record(el);
     expect(guard.allow(el)).toBe(true);
   });
+
+  test('reset() limpa o historico e desbloqueia o elemento', () => {
+    // (POR QUE) Caso real (HBO Max, troca de episodio): o player REAPROVEITA o
+    //   mesmo elemento de botao. Sem reset, apos ele ser bloqueado uma vez, o
+    //   proximo episodio (mesmo elemento) nunca mais seria clicado. O scanner
+    //   chama reset() quando o botao DESAPARECE (comportamento de um skip real),
+    //   devolvendo-o ao estado "limpo" para a proxima vez que aparecer.
+    const guard = createClickGuard({ maxClicksPerElement: 2 });
+    const el = {};
+
+    guard.record(el);
+    guard.record(el);
+    expect(guard.allow(el)).toBe(false); // bloqueado
+
+    guard.reset(el);
+    expect(guard.allow(el)).toBe(true); // desbloqueado e zerado
+
+    // E o contador tambem zerou: precisa de 2 novos records para bloquear de novo.
+    guard.record(el);
+    expect(guard.allow(el)).toBe(true);
+    guard.record(el);
+    expect(guard.allow(el)).toBe(false);
+  });
 });

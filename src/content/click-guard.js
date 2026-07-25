@@ -52,6 +52,19 @@ function createClickGuard(options) {
       clickCounts.set(element, next);
       if (next >= maxClicksPerElement) blocked.add(element);
     },
+
+    /**
+     * (O QUE) Zera o historico do elemento e o desbloqueia.
+     * (POR QUE) Um botao de pular real DESAPARECE apos o clique; um falso-positivo
+     *   (controle de seek) PERSISTE. O scanner chama reset() quando o botao some
+     *   ou fica oculto, tratando isso como prova de que era legitimo. Assim, se o
+     *   player REAPROVEITA o mesmo elemento (ex.: HBO Max ao trocar de episodio),
+     *   ele volta ao estado limpo e sera clicado normalmente na proxima aparicao.
+     */
+    reset(element) {
+      clickCounts.delete(element);
+      blocked.delete(element);
+    },
   };
 }
 

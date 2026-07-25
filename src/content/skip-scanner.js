@@ -27,14 +27,20 @@
 
   // (COMO) Globals expostos pelos scripts carregados antes deste (ordem do manifest).
   const api = globalThis.SkipVideoApi || globalThis.browser || globalThis.chrome;
-  const { findSkipButtons } = globalThis.SkipVideoDetector;
+  const { findSkipButtons, isVisible } = globalThis.SkipVideoDetector;
   const { createClickGuard } = globalThis.SkipVideoClickGuard;
 
   // (O QUE) Guard de auto-cura: um pular real some apos o clique; um
-  //   falso-positivo (ex.: controle de +-10s do Apple TV+) persiste. O guard
-  //   bloqueia quem persiste depois de poucos cliques, matando o loop. Vive por
-  //   toda a sessao da pagina (um botao novo mais tarde e outro elemento).
+  //   falso-positivo (controle de seek sempre visivel) persiste. O guard bloqueia
+  //   quem persiste depois de poucos cliques, matando o loop.
   const clickGuard = createClickGuard();
+
+  // (O QUE) Elementos que ja clicamos e ainda estamos vigiando.
+  // (POR QUE) Precisamos saber quando um botao clicado DESAPARECE/oculta para
+  //   resetar seu registro no guard. Isso conserta o bug do HBO Max: ao trocar
+  //   de episodio, o player REAPROVEITA o mesmo elemento; sem o reset, ele
+  //   ficaria eternamente bloqueado e nunca mais seria clicado.
+  const watchedClicked = new Set();
 
   // ---- Constantes de ajuste (documentadas para facilitar tuning) -----------
   // (POR QUE) Teto de iteracoes por rajada: impede um laco infinito caso um
@@ -84,8 +90,26 @@
    *   - `clickGuard`: se um elemento persiste entre rajadas e ja foi clicado
    *     alem do limite, e bloqueado de vez (auto-cura, independe do rotulo).
    */
+  /**
+   * (O QUE) Reseta no guard todo botao ja clicado que DESAPARECEU ou ficou oculto.
+   * (POR QUE) Sumir/ocultar apos o clique e o comportamento de um pular LEGITIMO.
+   *   Ao resetar, devolvemos o elemento ao estado limpo — essencial para players
+   *   que reaproveitam o mesmo botao entre episodios (HBO Max). Um falso-positivo
+   *   de seek, que fica SEMPRE visivel, nunca cai aqui e permanece protegido.
+   * (COMO) `isConnected` pega remocao do DOM; `isVisible` pega ocultacao via CSS.
+   */
+  function forgetDisappeared() {
+    for (const el of watchedClicked) {
+      if (!el.isConnected || !isVisible(el)) {
+        clickGuard.reset(el);
+        watchedClicked.delete(el);
+      }
+    }
+  }
+
   function runBurst() {
     if (!enabled) return;
+    forgetDisappeared(); // libera botoes que ja cumpriram seu papel e sumiram.
     const clickedThisBurst = new Set();
     let clickCount = 0;
 
@@ -104,6 +128,7 @@
           continue;
         }
         clickedThisBurst.add(button);
+        watchedClicked.add(button); // vigia para resetar quando ele sumir.
         clickGuard.record(button); // conta o clique (pode bloquear se persistir).
         clickCount++;
       }
