@@ -7,7 +7,11 @@
   "private": true,
   "scripts": {
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "build:pkg": "rm -rf dist/skipvideo && mkdir -p dist/skipvideo && cp -r manifest.json src icons LICENSE dist/skipvideo/",
+    "package": "npm run build:pkg && cd dist/skipvideo && zip -r -FS ../skipvideo.zip . -x '*.DS_Store' && cd ../..",
+    "lint:ext": "web-ext lint --source-dir dist/skipvideo",
+    "sign:firefox": "web-ext sign --source-dir dist/skipvideo --artifacts-dir dist --channel unlisted"
   },
   "devDependencies": {
     "jest": "^29.7.0",

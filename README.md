@@ -27,6 +27,12 @@ Resumo: Chrome → `chrome://extensions` → *Carregar sem compactação* → pa
 projeto. Firefox 121+ → `about:debugging` → *Carregar extensão temporária* →
 `manifest.json`.
 
+## Publicação nas lojas
+
+Gere o pacote com `npm run package` (cria `dist/skipvideo.zip` só com os arquivos de
+runtime) e siga **[docs/PUBLISH.md](docs/PUBLISH.md)** — Chrome Web Store (taxa única
+de US$ 5) e Firefox Add-ons (grátis). O mesmo zip serve para as duas lojas.
+
 ## Desenvolvimento
 
 ```bash

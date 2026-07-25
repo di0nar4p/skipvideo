@@ -8,6 +8,7 @@ npm-debug.log*
 # Empacotamento da extensao para distribuicao
 *.zip
 *.xpi
+dist/
 web-ext-artifacts/
 
 # Sistema operacional / editores
